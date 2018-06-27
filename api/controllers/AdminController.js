@@ -12,7 +12,9 @@ module.exports = {
         var params = req.body;
         Joi.validate(req.body, {
             userName: Joi.string().required(),
-            email: Joi.string().email().required()
+            email: Joi.string().email().required(),
+            responsibleTo: Joi.string(),
+            type: Joi.string()
         }, function(error, value) {
             Admin.findOne({ userName: params.userName }).exec(function(error, admin) {
                 if (error) {
@@ -69,7 +71,7 @@ module.exports = {
                 return res.badRequest(error.details);
             }
             req.body.email = req.body.email.toLowerCase();
-            Admin.findOne({ email: req.body.email }).exec(function(error, admin) {
+            Admin.findOne({ email: req.body.email }).populateAll().exec(function(error, admin) {
                 if (error) {
                     throw Error(error);
                 }
@@ -99,7 +101,8 @@ module.exports = {
         var Joi = require('joi');
         Joi.validate(req.body, {
             userName: Joi.string(),
-            email: Joi.string()
+            email: Joi.string(),
+            active: Joi.boolean()
         }, function(error, value) {
             if (error) {
                 return res.badRequest(error.details);
@@ -150,9 +153,39 @@ module.exports = {
                 });
             });
         });
+    },
+
+    userUpdate: function(req, res) {
+        var params = req.body;
+        var Joi = require('joi');
+        Joi.validate(req.body, {
+            userName: Joi.string(),
+            email: Joi.string(),
+            type: Joi.string(),
+            active: Joi.boolean()
+        }, function(error, value) {
+            if (error) {
+                return res.badRequest(error.details);
+            }
+            Users.findOne({ id: req.param('userId') }).exec(function(error, existingUser) {
+                if (error) {
+                    sails.log.error(error);
+                    return res.serverError('Database error');
+                }
+                if (!existingUser) {
+                    return res.notFound('Cannot update the details that does not exist.');
+                }
+                Users.update({ id: req.param('userId') }, params).exec(function(error, updateUser) {
+                    if (error) {
+                        sails.log.error(error);
+                        return res.serverError('Database error');
+                    }
+                    return res.ok(updateUser);
+                });
+            });
+
+        });
     }
-
-
 };
 
 function randomValueHex(len) {

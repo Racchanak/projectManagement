@@ -51,6 +51,8 @@ module.exports.routes = {
     'post /admin/organization': 'AdminController.organizationCreate',
 
     'post /user/create': 'UsersController.userCreate',
-    'post /user/login': 'UserController.userLogIn',
+    'post /user/login': 'UsersController.userLogIn',
+    'put /user/update': 'UsersController.userUpdate',
+
 
 };

@@ -99,8 +99,7 @@ module.exports = {
         var params = req.body;
         var Joi = require('joi');
         Joi.validate(req.body, {
-            userName: Joi.string(),
-            email: Joi.string()
+            userName: Joi.string()
         }, function(error, value) {
             if (error) {
                 return res.badRequest(error.details);
@@ -125,3 +124,10 @@ module.exports = {
         });
     }
 };
+
+function randomValueHex(len) {
+    var crypto = require('crypto');
+    return crypto.randomBytes(Math.ceil(len / 2))
+        .toString('hex') // convert to hexadecimal format
+        .slice(0, len); // return required number of characters
+}
