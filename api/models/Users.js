@@ -30,4 +30,18 @@ module.exports = {
             next();
         }
     },
+    beforeUpdate: function(values, next) {
+        if (values.password) {
+            var bcrypt = require('bcryptjs');
+            bcrypt.genSalt(10, function(err, salt) {
+                if (err) return next(err);
+                bcrypt.hash(values.password, salt, function(err, hash) {
+                    values.password = hash;
+                    next();
+                });
+            });
+        } else {
+            next();
+        }
+    }
 };

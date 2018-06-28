@@ -48,11 +48,19 @@ module.exports.routes = {
     'post /admin/create': 'AdminController.adminCreate',
     'post /admin/login': 'AdminController.adminLogIn',
     'put /admin/:adminId': 'AdminController.adminUpdate',
+
     'post /admin/organization': 'AdminController.organizationCreate',
+
+    'put /admin/user/:userId': 'AdminController.userUpdate',
+
+    'post /admin/project': 'AdminController.projectCreate',
+
+    'get /admin/superAdmin/access': 'AdminController.superAdminAccessList',
+    'get /admin/admin/access': 'AdminController.adminAccessList',
 
     'post /user/create': 'UsersController.userCreate',
     'post /user/login': 'UsersController.userLogIn',
-    'put /user/update': 'UsersController.userUpdate',
+    'put /user/:userId': 'UsersController.userUpdate',
 
 
 };

@@ -185,6 +185,86 @@ module.exports = {
             });
 
         });
+    },
+
+    projectCreate: function(req, res) {
+        var Joi = require('joi');
+        var params = req.body;
+        Joi.validate(req.body, {
+            projectName: Joi.string().required(),
+            linkedTo: Joi.string().required(),
+            belongsTo: Joi.string().required()
+        }, function(error, value) {
+            Projects.findOne({ projectName: params.projectName }).exec(function(error, project) {
+                if (error) {
+                    sails.log.error(error);
+                    return res.serverError('Database error');
+                }
+                if (project) {
+                    return res.forbidden('Project already exist');
+                }
+                Projects.create(params).exec(function(error, createProject) {
+                    if (error) {
+                        sails.log.error(error);
+                        return res.serverError('Database error');
+                    }
+                    return res.ok({
+                        project: createProject
+                    });
+                });
+            });
+        });
+    },
+
+    superAdminAccessList: function(req, res) {
+        var params = req.query;
+        var collection = params.collection;
+        if (collection == "admin") {
+            var getCollection = Admin;
+            var $select = '{"type": "admin"}';
+            var select = JSON.parse($select);
+        }
+        if (collection == "organization") {
+            var getCollection = Organization;
+            var select = {};
+        }
+        getCollection.find(select).sort('createdAt DESC').exec(function(error, details) {
+            if (error) {
+                sails.log.error(error);
+                return res.serverError("Database error");
+            }
+            return res.ok({
+                [collection]: details
+            });
+        });
+    },
+
+    adminAccessList: function(req, res) {
+        var params = req.query;
+        var collection = params.collection;
+        if (params.collection == "users") {
+            var getCollection = Users;
+            var $select = '{"type": "user"}';
+            var select = JSON.parse($select);
+        }
+        if (params.collection == "managers") {
+            var getCollection = Users;
+            var $select = '{"type": "manager"}';
+            var select = JSON.parse($select);
+        }
+        if (params.collection == "projects") {
+            var getCollection = Projects;
+            var select = {};
+        }
+        getCollection.find(select).sort('createdAt DESC').exec(function(error, details) {
+            if (error) {
+                sails.log.error(error);
+                return res.serverError("Database error");
+            }
+            return res.ok({
+                [collection]: details
+            });
+        });
     }
 };
 

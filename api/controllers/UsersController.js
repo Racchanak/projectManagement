@@ -99,7 +99,8 @@ module.exports = {
         var params = req.body;
         var Joi = require('joi');
         Joi.validate(req.body, {
-            userName: Joi.string()
+            userName: Joi.string(),
+            password: Joi.string()
         }, function(error, value) {
             if (error) {
                 return res.badRequest(error.details);
